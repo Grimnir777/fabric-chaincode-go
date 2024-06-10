@@ -321,6 +321,21 @@ func (s *ChaincodeStub) GetPrivateDataQueryResult(collection, query string) (Sta
 	return iterator, err
 }
 
+// GetPrivateDataQueryResultWithPagination documentation can be found in interfaces.go
+func (stub *ChaincodeStub) GetPrivateDataQueryResultWithPagination(collection, query string, pageSize int32,
+	bookmark string) (StateQueryIteratorInterface, *pb.QueryResponseMetadata, error) {
+	if collection == "" {
+		return nil, nil, fmt.Errorf("collection must not be an empty string")
+	}
+
+	metadata, err := createQueryMetadata(pageSize, bookmark)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return stub.handleGetQueryResult(collection, query, metadata)
+}
+
 // GetPrivateDataValidationParameter documentation can be found in interfaces.go
 func (s *ChaincodeStub) GetPrivateDataValidationParameter(collection, key string) ([]byte, error) {
 	md, err := s.handler.handleGetStateMetadata(collection, key, s.ChannelID, s.TxID)
